@@ -11,6 +11,7 @@ Welcome to note's documentation!
    :caption: Contents:
 
    MariaDB
+   samba
 
 Indices and tables
 ==================
