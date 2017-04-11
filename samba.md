@@ -93,6 +93,20 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 ### linux
 
+#### 普通使用
+
+1. 检查是否有smbclient命令,没有的话需要安装
+
+    `yum install samba-client`
+
+2. 使用smbclient命令登录，SAMBASERVER替换为samba服务器地址，USERNAME替换为实际的用户名:
+
+    `smbclient //SAMBASERVER/homes -U USERNAME`
+
+    *使用方法类似ftp命令行，输入help查看帮助菜单*
+
+#### mount
+
 用mount命令挂载，类似nfs
 
 1. 检查是否有mount.cifs命令，如果没有，安装软件包
@@ -101,15 +115,15 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
 2. 挂载
 
-    密码可以交互方式输入也可以非交互方式输入，127.0.0.1替换为实际的samba服务器地址，USERNAME替换为实际的用户名,PASSWORD替换为实际的密码，homes代表本用户家目录，不用修改:
+    密码可以交互方式输入也可以非交互方式输入，SAMBASERVER替换为实际的samba服务器地址，USERNAME替换为实际的用户名,PASSWORD替换为实际的密码，homes代表本用户家目录，不用修改:
 
     交互:
 
-        `mount //127.0.0.1/homes /mnt -o user=USERNAME`
+        `mount //SAMBASERVER/homes /mnt -o user=USERNAME`
 
     非交互:
 
-        `mount //127.0.0.1/homes /mnt -o user=USERNAME,password=PASSWORD`
+        `mount //SAMBASERVER/homes /mnt -o user=USERNAME,password=PASSWORD`
 
 ### windows
 类似windows共享文件夹
