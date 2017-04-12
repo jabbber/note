@@ -13,6 +13,7 @@ Welcome to note's documentation!
    MariaDB
    samba
    cobbler
+   couchdb
 
 Indices and tables
 ==================
