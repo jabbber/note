@@ -87,7 +87,7 @@ ansible可以使用动态主机脚本从couchdb获取主机列表::
 
 **附件**: :download:`inventory_couchdb.py <_static/couchdb/inventory_couchdb.py>`.
 
-附件脚本使用前需要配置 ``view_url`` 和 ``gruop_key`` 参数::
+附件脚本使用前需要配置 ``view_url`` 和 ``group_key`` 参数::
 
     #couchdb view api url
     view_url = 'http://10.214.160.113:5984/devtest/_design/server/_view/by_ip?include_docs=true'
