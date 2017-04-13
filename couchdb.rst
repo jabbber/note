@@ -29,9 +29,13 @@ REST API 常用操作
 
     curl -X GET http://10.214.160.113:5984/devtest/cdvl-bkin-a01
 
+创建用户::
+
+    curl -X PUT 'http://admin:admin@10.214.160.113:5984/_users/org.couchdb.user:zhouwenjun' -d '{"name": "zhouwenjun", "password": "123456", "roles": ["admins"], "type": "user"}'
+
 添加/修改一条数据(doc)::
 
-    curl -X PUT http://admin:admin@10.214.160.113:5984/devtest/cdvl-bkin-a01 -d \
+    curl -X PUT http://zhouwenjun:123456@10.214.160.113:5984/devtest/cdvl-bkin-a01 -d \
     '{
         "CPU": "8C", 
         "主IP": "10.214.160.113", 
@@ -89,4 +93,18 @@ ansible可以使用动态主机脚本从couchdb获取主机列表::
     view_url = 'http://10.214.160.113:5984/devtest/_design/server/_view/by_ip?include_docs=true'
     #分组的参考属性
     group_key = '应用项目'
+
+导入数据
+===================
+
+可以使用脚本批量导入excel中的数据:
+
+    #. 将excel打开，选择另存为 **csv utf-8** 格式，例如 ``hostlist.csv``
+
+    #. 运行脚本::
+
+        ./csv2couchdb.py hostlist.csv http://zhouwenjun:123456@10.214.160.113:5984/devtest
+
+**附件**: :download:`csv2couchdb.py <_static/couchdb/csv2couchdb.py>`
+
 
