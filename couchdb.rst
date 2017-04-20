@@ -74,6 +74,14 @@ REST API 常用操作
 **注**:"_rev"为couchdb内部字段，由数据库自动创建，添加新数据(doc)时不用写，修改现有数据时需要指定"_rev"，否则会报错：
     `{"error":"conflict","reason":"Document update conflict."}`
 
+创建 **view** 供查询(couchdb特性，不手动创建view不能查询)::
+    
+    function(doc) {
+        if(doc.主IP && doc.主机名) {
+            emit(doc.主IP, doc.主机名);
+        }
+    }
+
 查看"devtest"库的所有server的数据::
 
     curl 'http://10.214.160.113:5984/devtest/_design/server/_view/by_ip?include_docs=true'
