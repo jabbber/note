@@ -14,6 +14,7 @@ Welcome to note's documentation!
    samba
    cobbler
    couchdb
+   ansibleTowerBestPractices
 
 Indices and tables
 ==================

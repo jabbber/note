@@ -87,6 +87,7 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 #### 登录一个用户进行操作
 `smbclient //127.0.0.1/homes -U cuihengchun`
 
+
 -----------------------------------------------------------
 
 ## 使用
@@ -104,6 +105,60 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     `smbclient //SAMBASERVER/homes -U USERNAME`
 
     *使用方法类似ftp命令行，输入help查看帮助菜单*
+
+##### 常用命令
+
+```
+smb: \> help
+?              allinfo        altname        archive        backup         
+blocksize      cancel         case_sensitive cd             chmod          
+chown          close          del            dir            du             
+echo           exit           get            getfacl        geteas         
+hardlink       help           history        iosize         lcd            
+link           lock           lowercase      ls             l              
+mask           md             mget           mkdir          more           
+mput           newer          notify         open           posix          
+posix_encrypt  posix_open     posix_mkdir    posix_rmdir    posix_unlink   
+posix_whoami   print          prompt         put            pwd            
+q              queue          quit           readlink       rd             
+recurse        reget          rename         reput          rm             
+rmdir          showacls       setea          setmode        scopy          
+stat           symlink        tar            tarmode        timeout        
+translate      unlock         volume         vuid           wdel           
+logon          listconnect    showconnect    tcon           tdis           
+tid            logoff         ..             !
+```
+
+##### 上传/下载文件
+`put`/`get`
+
+##### 浏览文件
+`cd`/`ls`/`pwd`
+
+##### 查看和修改文件权限属主(示例中test是文件名)
+
+```
+smb: \> stat test
+File: \test
+Size: 0           	Blocks: 0	directory
+Inode: 278660	Links: 3
+Access: (0755/drwxr-xr-x)	Uid: 1000	Gid: 100
+Access: 2017-04-11 17:45:48 +0800
+Modify: 2015-08-07 10:36:12 +0800
+Change: 2017-04-17 15:46:53 +0800
+smb: \> chown 1000 1001 test
+smb: \> stat
+stat file
+smb: \> stat test
+File: \test
+Size: 0           	Blocks: 0	directory
+Inode: 278660	Links: 3
+Access: (0755/drwxr-xr-x)	Uid: 1000	Gid: 1001
+Access: 2017-04-11 17:45:48 +0800
+Modify: 2015-08-07 10:36:12 +0800
+Change: 2017-04-17 15:47:04 +0800
+```
+
 
 #### mount
 
