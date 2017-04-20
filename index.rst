@@ -12,7 +12,6 @@ Welcome to note's documentation!
 
    MariaDB
    samba
-   cobbler
    couchdb
    ansibleTowerBestPractices
 
