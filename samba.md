@@ -13,12 +13,58 @@
 `/etc/samba/smb.conf`
 ```ini
 [global]
-	workgroup = MYGROUP
-	server string = Samba Server Version %v
-	log file = /var/log/samba/log.%m
-	max log size = 50
-	security = user
-	passdb backend = tdbsam
+        workgroup = MYGROUP
+        server string = Samba Server Version %v
+        log file = /var/log/samba/log.%m
+        max log size = 50
+        log level = 0
+        vfs object = full_audit #开启审计功能
+            full_audit:prefix = %S|%u|%I|%m
+            full_audit:success = chdir mkdir open opendir read rename rmdir write link unlink
+            full_audit:failure = none
+            full_audit:facility = local7
+            full_audit:priority = notice
+        smb encrypt = mandatory #强制使用加密协议，防止自动协商到明文传输，如果客户端不支持加密则协商失败
+        security = user
+        passdb backend = tdbsam
+        load printers = no
+        cups options = raw
+[AM]
+        comment = AM理财
+        browseable = yes
+        writable = yes
+        create mask = 664
+        directory mask = 775
+        force group = am
+        valid users = +am
+        path = /home/99bill/AM
+[VAS]
+        comment = VAS权益
+        browseable = yes
+        writable = yes
+        create mask = 664
+        directory mask = 775
+        force group = vas
+        valid users = +vas
+        path = /home/99bill/VAS
+[CSD]
+        comment = CSD信用
+        browseable = yes
+        writable = yes
+        create mask = 664
+        directory mask = 775
+        force group = csd
+        valid users = +csd
+        path = /home/99bill/CSD
+[PCM]
+        comment = PCM合规
+        browseable = yes
+        writable = yes
+        create mask = 664
+        directory mask = 775
+        force group = pcm
+        valid users = +pcm
+        path = /home/99bill/PCM
 [homes]
 	comment = Home Directories
 	browseable = no
@@ -33,6 +79,42 @@
 
 ### 添加开机自启动
 `systemctl enable smb`
+
+
+## 配置审计功能
+```
+in /etc/rsyslog.d/50-smbd_audit.conf i have to tell rsyslogd to direct audit logs to a separate file:
+
+if $programname == 'smbd_audit' then /var/log/samba/audit.log
+if $programname == 'smbd_audit' then ~
+in /etc/samba/smb.conf i tell samba to generate such information:
+
+vfs object = full_audit
+full_audit:prefix = %S|%u|%I|%m
+full_audit:success = chdir mkdir open opendir read rename rmdir write link unlink
+full_audit:failure = none
+full_audit:facility = local7
+full_audit:priority = notice
+and finally tell logrotate to archive the files daily – /etc/logrotate.d/smbd_audit
+
+/var/log/samba/audit.log
+{
+rotate 7
+daily
+missingok
+notifempty
+delaycompress
+compress
+postrotate
+ invoke-rc.d rsyslog rotate > /dev/null
+endscript
+}
+finally restart both samba and rsyslog and enjoy the logs:
+
+service smbd restart
+service rsyslogd restart
+tail -f /var/log/samba/audit.log
+```
 
 ---------------------------------------------------
 
@@ -82,11 +164,22 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 `yum install samba-client`
 
 #### 查看服务器信息
-`smbclient -L 127.0.0.1 -U%`
+`smbclient -L 127.0.0.1 -U% -m SMB3`
 
 #### 登录一个用户进行操作
-`smbclient //127.0.0.1/homes -U cuihengchun`
+`smbclient //127.0.0.1/homes -U cuihengchun -m SMB3`
 
+
+-----------------------------------------------------------
+## 普通用户修改密码
+
+1. 检查是否有smbpasswd命令，没有的话需要安装
+
+    `yum install samba-common-tools`
+
+2. 修改密码命令：
+
+    `smbpasswd -r 10.214.96.85 -U zhouwenjun9`
 
 -----------------------------------------------------------
 
@@ -100,9 +193,13 @@ Logon hours : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
     `yum install samba-client`
 
-2. 使用smbclient命令登录，SAMBASERVER替换为samba服务器地址，USERNAME替换为实际的用户名:
+2. 查看目录服务端的共享目录,SAMBASERVER替换为samba服务器地址，USERNAME替换为实际的用户名：
 
-    `smbclient //SAMBASERVER/homes -U USERNAME`
+    `smbclient -L SAMBASERVER -U USERNAME -m SMB3`
+
+3. 使用smbclient命令登录，SAMBASERVER替换为samba服务器地址，USERNAME替换为实际的用户名,homes替换为需要访问的目录:
+
+    `smbclient //SAMBASERVER/homes -U USERNAME -m SMB3`
 
     *使用方法类似ftp命令行，输入help查看帮助菜单*
 
@@ -134,31 +231,6 @@ tid            logoff         ..             !
 
 ##### 浏览文件
 `cd`/`ls`/`pwd`
-
-##### 查看和修改文件权限属主(示例中test是文件名)
-
-```
-smb: \> stat test
-File: \test
-Size: 0           	Blocks: 0	directory
-Inode: 278660	Links: 3
-Access: (0755/drwxr-xr-x)	Uid: 1000	Gid: 100
-Access: 2017-04-11 17:45:48 +0800
-Modify: 2015-08-07 10:36:12 +0800
-Change: 2017-04-17 15:46:53 +0800
-smb: \> chown 1000 1001 test
-smb: \> stat
-stat file
-smb: \> stat test
-File: \test
-Size: 0           	Blocks: 0	directory
-Inode: 278660	Links: 3
-Access: (0755/drwxr-xr-x)	Uid: 1000	Gid: 1001
-Access: 2017-04-11 17:45:48 +0800
-Modify: 2015-08-07 10:36:12 +0800
-Change: 2017-04-17 15:47:04 +0800
-```
-
 
 #### mount
 
