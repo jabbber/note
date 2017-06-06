@@ -14,6 +14,7 @@ Welcome to note's documentation!
    samba
    couchdb
    ansibleTowerBestPractices
+   openssl
 
 Indices and tables
 ==================
